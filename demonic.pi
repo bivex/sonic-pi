@@ -1,0 +1,103 @@
+use_bpm 128
+
+live_loop :met1 do
+  sleep 1
+end
+
+cm1 = 90
+cm2 = 80
+
+define :pattern do |pat|
+  pat.ring.tick == "x"
+end
+
+
+########################################
+## 🩸 RITUAL KICK — ДЕМOНИЧЕСКИЙ УДАР
+########################################
+live_loop :kick, sync: :met1 do
+  sample :bd_fat, amp: 1.6, rate: 0.8, cutoff: cm1 if pattern "x---x-----x---x--"
+  sleep 0.25
+end
+
+
+########################################
+## 🕯️ WHISPERS OF BLOOD — ДЕМОНИЧЕСКИЙ ШЁПОТ
+########################################
+with_fx :ring_mod, freq: 18, mix: 0.4 do
+  with_fx :reverb, mix: 0.7, room: 1 do
+    live_loop :whispers, sync: :met1 do
+      sample :ambi_drone, rate: 0.25, amp: 0.3, cutoff: 70, pan: rrand(-0.7, 0.7)
+      sleep 4
+    end
+  end
+end
+
+
+########################################
+## 🔪 CLAWS HIHATS — РЕЗОНИРУЮЩИЕ КОГТИ
+########################################
+with_fx :hpf, cutoff: 80 do
+  with_fx :echo, phase: 0.125, mix: 0.3 do
+    live_loop :hats, sync: :met1 do
+      if pattern "x-x-x--xx-x-x-x--"
+        sample :drum_cymbal_closed, amp: 0.7, finish: 0.2, rate: 3, cutoff: 120,
+               pan: rrand(-0.4, 0.4)
+      end
+      sleep 0.125
+    end
+  end
+end
+
+
+########################################
+## 🔔 DARK BELLS — КОЛОКОЛА КРОВИ
+########################################
+with_fx :reverb, room: 1, mix: 0.9 do
+  live_loop :bells, sync: :met1 do
+    sleep 8
+    sample :perc_bell, amp: 0.2, rate: 0.4, attack: 0.3, release: 5, cutoff: 60
+    sleep 4
+  end
+end
+
+
+########################################
+## 🩸 ARCANE ARP — МАГИЧЕСКИЙ РИТУАЛЬНЫЙ АРПЕДДЖИО
+########################################
+with_fx :reverb, mix: 0.6, room: 0.9 do
+  with_fx :echo, mix: 0.4, phase: 0.75 do
+    live_loop :arp, sync: :met1 do
+      use_synth :dark_ambience
+      p = (line -0.6, 0.6, steps: 32).mirror.tick
+      note = (scale :g3, :phrygian).choose
+      play note, amp: 0.5, attack: 0.02, release: 0.5, pan: p, cutoff: 70
+      sleep 0.5
+    end
+  end
+end
+
+
+########################################
+## 🩸 BLOOD BASS — ПУЛЬС ТЬМЫ
+########################################
+with_fx :reverb, mix: 0.8, room: 1 do
+  live_loop :bass, sync: :met1 do
+    use_synth :dsaw
+    n = [:g2, :eb2, :f2].ring.tick
+    play n, sustain: 6, release: 2, cutoff: 60, amp: 1,
+         detune: 0.3, attack: 0.02
+    sleep 6
+  end
+end
+
+
+########################################
+## 🌫️ VAMPIRE BREATH — ДЫХАНИЕ ВАМПИРА
+########################################
+with_fx :gverb, dry: 0.2, mix: 0.7 do
+  live_loop :breath, sync: :met1 do
+    sample :ambi_haunted_hum, rate: 0.5, amp: 0.25, pan: rrand(-1, 1)
+    sleep 3
+  end
+end
