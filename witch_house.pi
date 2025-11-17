@@ -1,0 +1,111 @@
+use_bpm 104   # Witch house = медленно, ритуально
+
+live_loop :met do
+  sleep 1
+end
+
+define :pat do |p|
+  p.ring.tick == "x"
+end
+
+################################################
+## 🖤 DEEP WITCH KICK — жирный, проклятый
+################################################
+live_loop :kick, sync: :met do
+  sample :bd_haus, amp: 2.2, cutoff: 80, rate: 0.8 if pat "x---x-----x---x--"
+  sleep 0.25
+end
+
+
+################################################
+## 🌙 OCCULT SNARE — глухой, ритуальный
+################################################
+with_fx :reverb, mix: 0.6, room: 1 do
+  live_loop :snare, sync: :met do
+    sleep 1
+    sample :elec_lo_snare, amp: 0.9, rate: 0.6, cutoff: 70
+    sample :ambi_choir, amp: 0.2, rate: 0.25, finish: 0.1, pan: rrand(-0.2, 0.2)
+    sleep 1
+  end
+end
+
+
+################################################
+## 🔪 DARK HIHATS — ведьмино шипение
+################################################
+with_fx :hpf, cutoff: 90 do
+  live_loop :hats, sync: :met do
+    sample :drum_cymbal_closed, amp: 0.5, rate: 2.5, finish: 0.2,
+           pan: rrand(-0.4, 0.4) if pat "x-x-x-x-x-x-x-x"
+    sleep 0.125
+  end
+end
+
+
+################################################
+## 🩸 OCCULT PROGRESSION — главный темный аккордовый круг
+################################################
+witch_prog = [:g2, :eb2, :b2, :f2]
+
+with_fx :reverb, mix: 0.8, room: 1 do
+  live_loop :witch_bass, sync: :met do
+    use_synth :dsaw
+    n = witch_prog.tick
+
+    play n, sustain: 4, release: 2, amp: 1.3,
+         detune: 0.4, cutoff: 70, attack: 0.02
+    sleep 4
+  end
+end
+
+
+################################################
+## 🌫️ OCCULT PAD — туман ведьмы
+################################################
+with_fx :gverb, mix: 0.7, room: 30 do
+  live_loop :pad, sync: :met do
+    use_synth :hollow
+    n = witch_prog.look + 12
+
+    play n, sustain: 6, release: 4, amp: 0.6,
+         cutoff: (line 60, 100, steps: 64).mirror.tick,
+         pan: (line -0.5, 0.5, steps: 32).mirror.look
+
+    sleep 4
+  end
+end
+
+
+################################################
+## 🪄 VIRTUOSO ARP — будто ведьма колдует пальцами
+################################################
+with_fx :echo, phase: 0.75, mix: 0.5 do
+  with_fx :reverb, mix: 0.7 do
+    live_loop :magic_arp, sync: :met do
+      use_synth :prophet
+
+      base = witch_prog.look + 24
+      notes = (scale base, :phrygian).shuffle
+
+      play notes.tick,
+           amp: 0.6,
+           release: 0.4,
+           attack: 0.01,
+           cutoff: rrand(70, 120),
+           detune: rrand(0, 0.2),
+           pan: rrand(-0.6, 0.6)
+      sleep 0.375
+    end
+  end
+end
+
+
+################################################
+## 🌀 REVERSE SPELL FX — проклятие в реверсе
+################################################
+with_fx :reverb, mix: 0.9 do
+  live_loop :reverse_fx, sync: :met do
+    sleep 12
+    sample :elec_reverse_cymbal, rate: 0.6, amp: 0.5
+  end
+end
